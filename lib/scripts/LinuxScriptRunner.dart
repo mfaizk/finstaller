@@ -1,3 +1,4 @@
+import 'package:get/get_connect/http/src/http/io/file_decoder_io.dart';
 import 'package:process_run/shell.dart';
 import 'dart:io';
 
@@ -67,7 +68,7 @@ class LinuxScriptRunner {
 
     try {
       var downloadOutput = await cloneShell.run('''
-    #git clone -b master https://github.com/flutter/flutter.git
+    git clone -b master https://github.com/flutter/flutter.git
     ''');
       if (downloadOutput.errText.isEmpty) {
         shellChecker(dPath);
@@ -93,12 +94,13 @@ class LinuxScriptRunner {
   }
 
   setEnvironmentPath(var currentShell, var dpath) async {
+    final PATH = "PATH";
     final envShell = new Shell();
-
+    var shellFileLocation;
     if (dpath.toString().contains("Downloads")) {
       var homePath =
           dpath.toString().replaceAll(new RegExp("Downloads/.sdkenv"), '');
-      final shellFileLocation = homePath.trim();
+      shellFileLocation = homePath.trim();
       // print(shellFileLocation);
       envShell.pushd(shellFileLocation);
     } else {
@@ -106,13 +108,17 @@ class LinuxScriptRunner {
     }
 
     if (currentShell.toString().contains("zsh")) {
-      envShell.run('''
-      echo "PATH=$dpath/flutter/bin">>.zshrc
-      ''');
+      final filename = '$shellFileLocation.zshrc';
+      new File(filename)
+          .writeAsString("export PATH=$dpath/flutter/bin:$PATH",
+              mode: FileMode.append)
+          .then((value) => print(value.toString()));
     } else if (currentShell.toString().contains("bash")) {
-      envShell.run('''
-      echo "PATH=$dpath/flutter/bin">>.bashrc
-      ''');
+      final filename = '$shellFileLocation.bashrc';
+      new File(filename)
+          .writeAsString("export PATH=$dpath/flutter/bin:$PATH",
+              mode: FileMode.append)
+          .then((value) => print(value.toString()));
     } else if (currentShell.toString().contains("fish")) {
       print("Work In Progress");
     } else {

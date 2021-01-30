@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:finstaller/scripts/LinuxScriptRunner.dart';
 import 'package:flutter/material.dart';
 
@@ -7,11 +9,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var currentPlatform = "Void";
   Color progressColor = Color(0xff383CC1);
   String startStatus = "false";
   String ot = "Welcome to Flutter Installer";
 
-  connectionChecker() async {
+  linuxScriptExecuter() async {
     var script = new LinuxScriptRunner();
     // print(script.preRequistCheck());
     if (await script.preRequistCheck()) {
@@ -20,15 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       if (await script.checkIfFlutterExist()) {
         setState(() {
-          ot = ot + "\n" + "Flutter sdk not found";
-          ;
+          ot = ot +
+              "\n" +
+              "Flutter sdk not found" +
+              "All PreRequist Condition met Starting Fetching Process" +
+              "\n Fetching Sdk from github.......";
         });
         if (await script.fetchSdk()) {
           setState(() {
-            ot = ot +
-                "\n" +
-                "All PreRequist Condition met Starting Fetching Process" +
-                "\n Fetching Sdk from github.......";
+            ot = ot + "\n" + "Sdk Fetched";
           });
         } else {
           setState(() {
@@ -49,10 +52,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  platformChecker() async {
+    if (Platform.isLinux) {
+      setState(() {
+        startStatus = "true";
+      });
+      linuxScriptExecuter();
+      print("Found its Linux");
+    } else if (Platform.isMacOS) {
+      setState(() {
+        startStatus = "true";
+      });
+      print("Found its MacOs");
+    } else if (Platform.isWindows) {
+      setState(() {
+        startStatus = "true";
+      });
+      print("Found its Windows");
+    } else {
+      setState(() {
+        startStatus = "false";
+      });
+      print("Platform not supported");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    connectionChecker();
   }
 
   @override
@@ -111,24 +138,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color(0xff3944F7),
                       alignment: Alignment.center,
                       child: MaterialButton(
-                        color: Color(0xff2827CC),
-                        child: FittedBox(
-                          alignment: Alignment.center,
-                          fit: BoxFit.contain,
-                          child: Text(
-                            "Install Flutter",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize:
-                                    MediaQuery.of(context).size.height * 0.03),
+                          color: Color(0xff2827CC),
+                          child: FittedBox(
+                            alignment: Alignment.center,
+                            fit: BoxFit.contain,
+                            child: Text(
+                              "Install Flutter",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.03),
+                            ),
                           ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            startStatus = "true";
-                          });
-                        },
-                      ),
+                          onPressed: () {
+                            platformChecker();
+                          }),
                     )),
               ],
             )),
