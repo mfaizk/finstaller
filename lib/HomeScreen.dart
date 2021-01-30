@@ -10,6 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var currentPlatform = "Void";
+  Color otTextColor = Color(0xff1B98F5);
   Color progressColor = Color(0xff383CC1);
   String startStatus = "false";
   String ot = "Welcome to Flutter Installer";
@@ -17,17 +18,32 @@ class _HomeScreenState extends State<HomeScreen> {
   linuxScriptExecuter() async {
     var script = new LinuxScriptRunner();
     // print(script.preRequistCheck());
+    setState(() {
+      ot = "Welcome to Flutter Installer";
+      otTextColor = Color(0xff1B98F5);
+    });
     if (await script.preRequistCheck()) {
-      setState(() {
-        ot = ot + "\n" + "Internet Connection Found";
-      });
+      if (await script.checkGitInstalltion()) {
+        setState(() {
+          ot = ot + "\n" + "Internet Connection Found";
+          progressColor = Color(0xff383CC1);
+        });
+      } else {
+        setState(() {
+          ot =
+              ot + "\n" + "Please Install git\n 404 No git not found on system";
+          otTextColor = Color(0xffB4161B);
+          startStatus = "false";
+        });
+      }
       if (await script.checkIfFlutterExist()) {
         setState(() {
           ot = ot +
               "\n" +
               "Flutter sdk not found" +
+              "\n" +
               "All PreRequist Condition met Starting Fetching Process" +
-              "\n Fetching Sdk from github.......";
+              "\nFetching Sdk from github.......";
         });
         if (await script.fetchSdk()) {
           setState(() {
@@ -38,16 +54,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ot = ot +
                 "\n" +
                 "All PreRequist Condition are not met process terminated";
+            startStatus = "false";
+            otTextColor = Color(0xffB4161B);
           });
         }
       } else {
         setState(() {
           ot = ot + "\n" + "Flutter Sdk Already Installed Process Terminated";
+          startStatus = "false";
+          otTextColor = Color(0xffB4161B);
         });
       }
     } else {
       setState(() {
         ot = ot + "\n" + "404 Please check Your Internet Connection";
+        startStatus = "false";
+        otTextColor = Color(0xffB4161B);
       });
     }
   }
@@ -114,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Color(0xff120E43),
                     child: Text(
                       ot,
-                      style: TextStyle(color: Color(0xff1B98F5)),
+                      style: TextStyle(color: otTextColor),
                     )),
                 Container(
                     alignment: Alignment.center,

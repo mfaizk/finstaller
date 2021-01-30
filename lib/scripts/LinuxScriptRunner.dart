@@ -1,4 +1,3 @@
-import 'package:get/get_connect/http/src/http/io/file_decoder_io.dart';
 import 'package:process_run/shell.dart';
 import 'dart:io';
 
@@ -6,6 +5,21 @@ import 'package:path_provider/path_provider.dart';
 
 class LinuxScriptRunner {
   var shell = Shell();
+
+  checkGitInstalltion() async {
+    try {
+      var gitCheck = await shell.run('''
+     git --version
+    ''');
+      if (gitCheck.errText.isEmpty) {
+        return true;
+      }
+      return false;
+    } on ShellException catch (e) {
+      print(e.message);
+      return false;
+    }
+  }
 
   preRequistCheck() async {
     try {
@@ -22,7 +36,7 @@ class LinuxScriptRunner {
   checkIfFlutterExist() async {
     try {
       var result = await shell.run('''
-    fluttr --version
+    flutte --version
     ''');
       if (result.errText.isEmpty) {
         return false;
@@ -94,7 +108,7 @@ class LinuxScriptRunner {
   }
 
   setEnvironmentPath(var currentShell, var dpath) async {
-    final PATH = "PATH";
+    final PATH = "\$PATH";
     final envShell = new Shell();
     var shellFileLocation;
     if (dpath.toString().contains("Downloads")) {
@@ -133,11 +147,16 @@ class LinuxScriptRunner {
     ''');
       if (result.errText.isEmpty) {
         print("Flutter Installed Sucessfull");
+        return true;
       } else {
         print("Installation failed");
+
+        return false;
       }
     } on ShellException catch (e) {
       print(e.result);
+
+      return false;
     }
   }
 }
