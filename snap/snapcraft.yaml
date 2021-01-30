@@ -1,0 +1,21 @@
+name: finstaller
+version: 0.1.0
+summary: Super Cool App to Install flutter easily on your machine
+description: Super Cool App to Install flutter easily on your machine
+
+confinement: strict
+base: core18
+grade: devel
+
+apps:
+  finstaller:
+    command: Simple-App
+    extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
+    plugs:
+    - network
+
+parts:
+  finstaller:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart # The main entry-point file of the application
