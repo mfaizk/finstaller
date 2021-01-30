@@ -47,13 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ot = ot + "\n" + "404 Please check Your Internet Connection";
       });
     }
-
-    // var ot1 = await script.preRequistCheck();
-    // var ot2 = await script.checkIfFlutterExist();
-    // var ot3 = await script.fetchSdk();
-    // setState(() {
-    //   ot = ot + "\n" + ot1.toString() + "\n" + ot2 + "\n" + ot3;
-    // });
   }
 
   @override
